@@ -2,7 +2,7 @@
 
 Submitted by: **Charlotte Kathlyn Naa Odarley Wellington**
 
-This web app: **A flashcard game where players guess numbers using clues.**
+This web app: ** Hidden Number is a React flashcard app that helps users prepare for technical interviews by practicing Data Structures and Algorithms concepts. Users can flip cards to reveal answers, study randomly selected questions, and learn through difficulty-based categories in an interactive and engaging way.**
 
 Time spent: **48** hours spent in total
 
