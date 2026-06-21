@@ -1,0 +1,311 @@
+/* ---- Reset & Viewport Constraints ---- */
+body {
+  background-image: url('bg.jpeg');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  height: 100vh;
+  margin: 0;
+  padding: 0;
+  font-family: Arial, Helvetica, sans-serif;
+  overflow: hidden; /* Prevents the browser window from scrolling entirely */
+}
+
+/* Base application container */
+.AppContainer {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  box-sizing: border-box;
+  padding: 10px 20px;
+}
+
+/* ---- Compact Typography ---- */
+h1 {
+  color: white;
+  text-align: center;
+  margin: 5px 0 2px 0;
+  font-size: 24px;
+  font-weight: 600;
+}
+
+h3 {
+  color: white;
+  text-align: center;
+  font-weight: 300;
+  max-width: 800px;
+  margin: 0 auto 10px auto;
+  font-size: 13px;
+  opacity: 0.9;
+}
+
+/* ---- Dashboard Columns (Desktop) ---- */
+.MainDashboard {
+  display: flex;
+  flex: 1;
+  gap: 20px;
+  min-height: 0; /* Critical fix for inner flex child overflow sizing */
+  margin-bottom: 10px;
+}
+
+/* Left column contains the active flashcard workspace */
+.WorkspaceSection {
+  flex: 1.5;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-height: 0;
+}
+
+/* Right column contains your mastered list sidebar */
+.SidebarSection {
+  flex: 1;
+  background-color: rgba(0, 0, 0, 0.2);
+  border-radius: 12px;
+  padding: 15px;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+/* ---- Compact Components ---- */
+.TopBar {
+  display: flex;
+  justify-content: center;
+  gap: 30px;
+  margin-bottom: 10px;
+  font-size: 14px;
+}
+.CounterText, .StreakText {
+  color: white;
+  margin: 0;
+}
+
+/* ---- Fixed Height Flip Card styles ---- */
+.scene {
+  width: 90%;
+  max-width: 550px;
+  height: 200px; /* Reduced card height to save vital vertical space */
+  perspective: 1000px;
+  margin: 0 auto 15px auto;
+  cursor: pointer;
+}
+
+.card-inner {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  transform-style: preserve-3d;
+  transition: transform 0.5s ease-in-out;
+}
+.card-inner.flipped {
+  transform: rotateY(180deg);
+}
+
+.card-face {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  border-radius: 10px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+  overflow: hidden;
+  padding: 15px;
+  box-sizing: border-box;
+}
+.card-front { transform: rotateY(0deg); z-index: 2; }
+.card-back { background-color: #cce5ff; transform: rotateY(180deg); }
+
+.FlashParagraph {
+  color: black;
+  font-size: 1.1rem;
+  font-weight: 600;
+  text-align: center;
+  margin: 5px 0 0 0;
+}
+
+.CardImage {
+  width: 70px;
+  height: 70px;
+  object-fit: contain;
+  margin-top: 5px;
+  border-radius: 6px;
+}
+
+.DifficultyTag {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 11px;
+  background-color: rgba(0,0,0,0.1);
+  color: black;
+  font-weight: bold;
+}
+
+/* Colors */
+.Easy   { background-color: #d4edda; }
+.Medium { background-color: #fff3cd; }
+.Hard   { background-color: #f8d7da; }
+
+/* ---- Form controls ---- */
+.GuessFormRow {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  margin: 0 auto 10px auto;
+  width: 100%;
+  max-width: 450px;
+}
+.GuessLabel {
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  width: 100%;
+  font-size: 14px;
+}
+.GuessInput {
+  padding: 8px 12px;
+  border-radius: 6px;
+  border: none;
+  flex: 1;
+  font-size: 0.95rem;
+}
+.SubmitGuessButton {
+  padding: 8px 16px;
+  border-radius: 6px;
+  border: none;
+  background-color: #2d6a4f;
+  color: white;
+  font-weight: 600;
+  cursor: pointer;
+  font-size: 14px;
+}
+.SubmitGuessButton:disabled { background-color: #6c757d; cursor: not-allowed; }
+
+.GuessFeedback {
+  font-weight: 700;
+  margin: 0;
+  padding: 4px 12px;
+  border-radius: 4px;
+  font-size: 13px;
+}
+.GuessFeedback.Correct { background-color: #d4edda; color: #155724; }
+.GuessFeedback.Incorrect { background-color: #f8d7da; color: #721c24; }
+
+.MasterRow {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 12px;
+}
+.MasterButton {
+  padding: 8px 16px;
+  border-radius: 6px;
+  border: none;
+  background-color: #ffffffcc;
+  color: #2d6a4f;
+  font-weight: 600;
+  cursor: pointer;
+  font-size: 13px;
+}
+
+.Buttons {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+}
+.Buttons button {
+  padding: 8px 16px;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 13px;
+}
+
+.EmptyState {
+  color: white;
+  text-align: center;
+  font-size: 1rem;
+  margin: auto;
+}
+
+/* ---- Scrollable Mastered concepts panel ---- */
+.MasteredListContainer {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+.MasteredHeader {
+  color: white;
+  margin: 0 0 10px 0;
+  font-size: 16px;
+  text-align: center;
+  border-bottom: 1px solid rgba(255,255,255,0.2);
+  padding-bottom: 5px;
+}
+.MasteredScrollBox {
+  flex: 1;
+  overflow-y: auto; /* List container scrolls natively inside the sidebar if long */
+  padding-right: 5px;
+}
+.MasteredScrollBox::-webkit-scrollbar { width: 5px; }
+.MasteredScrollBox::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 4px; }
+
+.MasteredItem {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: rgba(255, 255, 255, 0.1);
+  padding: 8px 12px;
+  border-radius: 6px;
+  margin-bottom: 6px;
+  color: white;
+  font-size: 13px;
+}
+.UnmasterBtn {
+  background-color: #f8d7da;
+  color: #721c24;
+  border: none;
+  padding: 4px 8px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+/* ---- Responsive adjustments for Mobile ---- */
+@media (max-width: 768px) {
+  body { overflow: auto; height: auto; }
+  .AppContainer { height: auto; padding: 10px; }
+  .MainDashboard { flex-direction: column; height: auto; }
+  .scene { width: 100%; height: 240px; }
+  .SidebarSection { max-height: 250px; }
+}
+
+.ResetStreaksBtn {
+  background-color: rgba(255, 255, 255, 0.15);
+  color: white;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  padding: 4px 12px;
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+  margin-top: 6px;
+  transition: all 0.2s ease;
+}
+
+.ResetStreaksBtn:hover {
+  background-color: rgba(220, 53, 69, 0.25);
+  border-color: #dc3545;
+}
