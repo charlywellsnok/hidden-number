@@ -37,53 +37,42 @@ const ALL_CARDS = [
   }
 ]
 
-// Strips punctuation, accents, and converts to lowercase
 const normalize = (str) =>
   str
     .toLowerCase()
     .trim()
-    .normalize("NFD").replace(/[\u0300-\u036f]/g, "") // removes text accents
-    .replace(/[.,/#!$%^&*;:{}=\-_`~()?'"]/g, '')      // strips punctuation
-    .replace(/\s+/g, ' ')                             // unifies spacing
+    .normalize("NFD").replace(/[\u0300-\u036f]/g, "") 
+    .replace(/[.,/#!$%^&*;:{}=\-_`~()?'"]/g, '')      
+    .replace(/\s+/g, ' ')                             
 
-// Intelligent fuzzy matching function
 const isGuessCorrect = (guess, answer) => {
   const normGuess = normalize(guess)
   const normAnswer = normalize(answer)
   
   if (!normGuess) return false
   
-  // Rule 1: Direct Substring or Exact Match (handles short answers cleanly)
   if (normAnswer.includes(normGuess) || normGuess.includes(normAnswer)) {
     return true
   }
   
-  // List of common technical filler words to ignore for concept checks
   const fillerWords = new Set([
     'a', 'an', 'the', 'is', 'are', 'was', 'were', 'it', 'in', 'on', 
     'at', 'by', 'of', 'for', 'with', 'to', 'that', 'this', 'data', 'structure'
   ])
   
-  // Rule 2: Tokenized Keyword Check
-  // Splits answers into arrays of clean standalone words
   const guessWords = normGuess.split(' ').filter(w => w.length > 1 && !fillerWords.has(w))
   const answerWords = normAnswer.split(' ').filter(w => w.length > 1 && !fillerWords.has(w))
   
   if (guessWords.length === 0) return false
 
-  // Counts how many core concepts/keywords the user guessed correctly
   let matchCount = 0
   guessWords.forEach(gWord => {
-    // Matches if the exact word exists or is a close root variant (e.g., "shuffling" vs "shuffle")
     const found = answerWords.some(aWord => aWord.includes(gWord) || gWord.includes(aWord))
     if (found) matchCount++
   })
 
-  // If the user hits at least 50% of the core keywords, mark it correct!
   const matchRatio = matchCount / Math.max(answerWords.length, 1)
-  if (matchRatio >= 0.5) return true
-
-  return false
+  return matchRatio >= 0.5
 }
 
 const shuffleArray = (arr) => {
@@ -98,6 +87,8 @@ const shuffleArray = (arr) => {
 export default function App() {
   const [order, setOrder] = useState(ALL_CARDS.map((c) => c.id))
   const [currentIndex, setCurrentIndex] = useState(0)
+  
+  // Track IDs of mastered cards
   const [masteredIds, setMasteredIds] = useState([])
 
   const [guess, setGuess] = useState('')
@@ -114,6 +105,7 @@ export default function App() {
     []
   )
 
+  // Dynamic Pool Calculation: Automatically filters out cards that have been mastered
   const activePool = useMemo(
     () => order.filter((id) => !masteredIds.includes(id)),
     [order, masteredIds]
@@ -123,7 +115,6 @@ export default function App() {
   const currentId = activePool[safeIndex]
   const currentCard = currentId ? cardsById[currentId] : null
 
-  // ⚠️ CRITICAL VISUAL NAVIGATION BOUNDARY CHECKS
   const isAtStart = safeIndex === 0
   const isAtEnd = safeIndex === activePool.length - 1
 
@@ -138,7 +129,6 @@ export default function App() {
     setManualFlip(false)
   }
 
-  // Linear progression blocks (No wrap-around actions)
   const handleNextCard = () => {
     if (isAtEnd) return
     setCurrentIndex((i) => Math.min(i + 1, activePool.length - 1))
@@ -179,13 +169,17 @@ export default function App() {
     setLongestStreak(0)
   }
 
+  // UPDATED: Appends the card ID to mastered collection and ensures structural safety index recalculation
   const handleMarkMastered = () => {
     if (!currentCard) return
     setMasteredIds((prev) => [...prev, currentCard.id])
+    
+    // Safely clamp index bounds down so it auto-focuses an remaining concept smoothly
     setCurrentIndex((i) => Math.max(0, Math.min(i, activePool.length - 2)))
     resetCardState()
   }
 
+  // RESTORE CAPABILITY: Allows extracting cards back out of the mastered list pool
   const handleUnmaster = (id) => {
     setMasteredIds((prev) => prev.filter((m) => m !== id))
   }
@@ -206,9 +200,13 @@ export default function App() {
           <p className="CounterText">
             Cards remaining: {activePool.length} &nbsp;·&nbsp; Mastered: {masteredIds.length}
           </p>
-          <p className="StreakText">
-            Current Streak: {currentStreak}, Longest Streak: {longestStreak}
-          </p>
+          
+          <div className="StreakDisplayBadge">
+            <span className="StreakValue">🔥 Current Streak: <strong>{currentStreak}</strong></span>
+            <span className="StreakDivider">|</span>
+            <span className="StreakValue">🏆 Longest Streak: <strong>{longestStreak}</strong></span>
+          </div>
+
           <button className="ResetStreaksBtn" onClick={handleResetCounters}>
             Reset Stats ↺
           </button>
@@ -257,13 +255,14 @@ export default function App() {
             {feedback === 'incorrect' && <p className="GuessFeedback Incorrect">✗ Not quite — check the back of the card.</p>}
           </div>
 
+          {/* Master Button Implementation */}
           <div className="MasterRow">
             <button className="MasterButton" onClick={handleMarkMastered}>
               ✓ Mark as mastered
             </button>
           </div>
 
-          {/* Updated Nav Action Row */}
+          {/* Nav Controls */}
           <div className="Buttons">
             <button onClick={handlePreviousCard} disabled={isAtStart}>
               ← Back
@@ -280,7 +279,7 @@ export default function App() {
         <p className="EmptyState">All concepts mastered! Bring them back using the tracker list.</p>
       )}
 
-      {/* Absolute Mastered Tracker Drawer Overlay */}
+      {/* Interactive Floating Mastered Drawer Container */}
       <button className="DrawerTrigger" onClick={() => setIsDrawerOpen(!isDrawerOpen)}>
         {isDrawerOpen ? '✕ Close List' : `🏆 Mastered List (${masteredCardsList.length})`}
       </button>
